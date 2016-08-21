@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	double x0, v0;
 	printf("Enter the initial position (x0) of the particle = ");
 	scanf("%lf", &x0);
-	printf("Enter the initial velocity (y0) of the particle = ");
+	printf("Enter the initial velocity (v0) of the particle = ");
 	scanf("%lf", &v0);
 
 	double k, m;
