@@ -32,21 +32,26 @@ int main(int argc, char* argv[])
 	printf("Enter the mass (m) of the particle = ");
 	scanf("%lf", &m);
 
-	int no_of_iter = t / delta_t;
+	FILE* fp = fopen("results.dat", "w");
 
 	int i;
 	double x = x0;
 	double v = v0;
 	double t_count = delta_t;
-	for(i = 0; i < no_of_iter; i++) {
+	int no_of_iter = t / delta_t;
+
+	for (i = 0; i < no_of_iter; i++) {
 		double f1 = -(k * x);
 		x = x + (v * delta_t) + (f1 * pow(delta_t, 2)) / (m * 2.0);
 		double f2 = -(k * x);
 		v = v + ((f1 + f2) * delta_t / (m * 2.0));
 
-		printf("%lf %lf\n", t_count, x);
+		fprintf(fp, "%lf %lf\n", t_count, x);
 
 		t_count += delta_t;
 	}
+
+	printf("The final position (xf) of the particle is = %lf\n", x);
+
 	return 0;
 }
