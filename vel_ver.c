@@ -21,12 +21,12 @@ int main(int argc, char* argv[])
 	scanf("%lf", &t);
 
 	/*
-	 * Δt is being user defined here because of the application of the
+	 * delta_t is being user defined here because of the application of the
 	 * program which may range from a couple of millimeters (where smaller
 	 * values of delta will be preferred) to several hundred kilometers
 	 * (where only larger deltas of maybe a centimeter or meter will matter)
 	 */
-	printf("Enter Δt = ");
+	printf("Enter delta_t = ");
 	scanf("%lf", &delta_t);
 
 	double x0, v0;
