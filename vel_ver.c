@@ -1,5 +1,6 @@
 #include "calc.h"
 
+// Struct to store the state of the particle.
 typedef struct props {
 	double xi;
 	double xj;
@@ -15,8 +16,16 @@ int main(int argc, char* argv[])
 	double t;
 	double delta_t;
 
+	// User input.
 	printf("Enter the final time (t) of the trajectory = ");
 	scanf("%lf", &t);
+
+	/*
+	 * Δt is being user defined here because of the application of the
+	 * program which may range from a couple of millimeters (where smaller
+	 * values of delta will be preferred) to several hundred kilometers
+	 * (where only larger deltas of maybe a centimeter or meter will matter)
+	 */
 	printf("Enter Δt = ");
 	scanf("%lf", &delta_t);
 
@@ -40,6 +49,7 @@ int main(int argc, char* argv[])
 	double t_count = delta_t;
 	int no_of_iter = t / delta_t;
 
+	// Calculating the position and velocity of the particle at ith iterations.
 	for (i = 0; i < no_of_iter; i++) {
 		double f1 = -(k * x);
 		x = x + (v * delta_t) + (f1 * pow(delta_t, 2)) / (m * 2.0);
@@ -51,6 +61,7 @@ int main(int argc, char* argv[])
 		t_count += delta_t;
 	}
 
+	// Printing the final position of the particle.
 	printf("The final position (xf) of the particle is = %lf\n", x);
 
 	return 0;
