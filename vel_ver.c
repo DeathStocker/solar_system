@@ -20,6 +20,12 @@ int main(int argc, char* argv[])
 	printf("Enter Δt = ");
 	scanf("%lf", &delta_t);
 
+	double x0, v0;
+	printf("Enter the initial position of the particle = ");
+	scanf("%lf", &x0);
+	printf("Enter the initial velocity of the particle = ");
+	scanf("%lf", &v0);
+
 	double no_of_iter = t / delta_t;
 
 	int i;
