@@ -37,3 +37,6 @@
 
 #PDF files
 *.pdf
+
+#Output Files
+results.dat
