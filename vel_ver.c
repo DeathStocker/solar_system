@@ -39,12 +39,13 @@ int main(int argc, char* argv[])
 	double v = v0;
 	double t_count = delta_t;
 	for(i = 0; i < no_of_iter; i++) {
-		double f1 = -x;
-		x = x + (v * delta_t) + (f1 * pow(delta_t, 2)) / 2.0;
-		double f2 = -x;
-		v = v + ((f1 + f2) * delta_t / 2.0);
+		double f1 = -(k * x);
+		x = x + (v * delta_t) + (f1 * pow(delta_t, 2)) / (m * 2.0);
+		double f2 = -(k * x);
+		v = v + ((f1 + f2) * delta_t / (m * 2.0));
 
 		printf("%lf %lf\n", t_count, x);
+
 		t_count += delta_t;
 	}
 	return 0;
