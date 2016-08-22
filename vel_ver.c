@@ -58,9 +58,9 @@ properties input_param()
 	scanf("%lf", &props.delta_t);
 
 	printf("Enter the initial position (r) of the particle = ");
-	vector_input(&props.r, dim);
+	vector_input(&props.r, props.dim);
 	printf("Enter the initial velocity (v) of the particle = ");
-	vector_input(&props.v, dim);
+	vector_input(&props.v, props.dim);
 
 	printf("Enter the spring constant (k) = ");
 	scanf("%lf", &props.k);
