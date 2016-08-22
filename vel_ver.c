@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 		   Vector form of v = v + (delta_t * (f1 + f2) / (2 * m))
 		 */
 		double scal_part = delta_t / (m * 2.0);
-		v = vector_add(v, scalar_prod(scal_part, vector_add(f1, f2));
+		v = vector_add(v, scalar_prod(scal_part, vector_add(f1, f2)));
 
 		// Printing position coordinates to file.
 		fprintf(fp, "%lf %lf %lf %lf\n", t_count, r.x, r.y, r.z);

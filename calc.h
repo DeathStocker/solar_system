@@ -32,4 +32,6 @@ vector vector_add(vector a, vector b);
 
 vector vector_minus(vector a, vector b);
 
+vector scalar_prod(double scalar, vector a);
+
 #endif

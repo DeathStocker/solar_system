@@ -81,3 +81,17 @@ vector vector_minus(vector a, vector b)
 
 	return res;
 }
+
+/*
+   Gives the resultant of the product between a scalar and a vector.
+ */
+vector scalar_prod(double scalar, vector a)
+{
+	vector res;
+
+	res.x = scalar * a.x;
+	res.y = scalar * a.y;
+	res.z = scalar * a.z;
+
+	return res;
+}
