@@ -25,12 +25,5 @@ double integrate(double (*f)(double), double x1, double x2, double delta)
 		sum += y * delta;
 	}
 
-	return my_round(sum, 0);
-}
-
-double my_round(double x, unsigned int digits)
-{
-	double fac = pow(10, digits);
-
-	return round(x * fac) / fac;
+	return sum;
 }
