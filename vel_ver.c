@@ -15,27 +15,33 @@ int vector_input(vector* a, int dim)
 {
 	vector temp;
 
+	temp.x = 0;
+	temp.y = 0;
+	temp.z = 0;
+
 	switch (dim) {
 	case 3:
-		printf("x = ");
+		/*
+		   Custom magic formula to print the respective coordinate
+		   correctly without changing/adding any extra lines of code.
+		 */
+		printf("%c = ", (char)('y' + dim - 4));
 		scanf("%lf", &temp.x);
 	case 2:
-		temp.x = 0;
-		printf("y = ");
+		printf("%c = ", (char)('x' + dim - 2));
 		scanf("%lf", &temp.y);
 	case 1:
-		temp.x = 0;
-		temp.y = 0;
-		printf("z = ");
+		printf("%c = ", (char)('w' + dim));
 		scanf("%lf", &temp.z);
+		break;
 	default:
 		printf("Dimension is not 1, 2, or 3. Exitting.\n");
 		return 1;
 	}
 
-	a->x = temp.z;
+	a->x = temp.x;
 	a->y = temp.y;
-	a->z = temp.x;
+	a->z = temp.z;
 
 	return 0;
 }
