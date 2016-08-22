@@ -1,16 +1,5 @@
 #include "calc.h"
 
-// Struct to store the state of the particle.
-typedef struct props {
-	double xi;
-	double xj;
-	double xk;
-
-	double vi;
-	double vj;
-	double vk;
-} state;
-
 int main(int argc, char* argv[])
 {
 	double t;

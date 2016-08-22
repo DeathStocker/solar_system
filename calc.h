@@ -10,6 +10,13 @@ typedef struct pt_2d {
 	double y;
 } point_2d;
 
+// Struct of a vector in Cartesian coordinates.
+typedef struct _vector {
+	double x;
+	double y;
+	double z;
+} vector;
+
 double find_slope(point_2d a, point_2d b);
 
 double diff(double (*f)(double), double x, double delta);
