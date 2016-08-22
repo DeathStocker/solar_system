@@ -37,3 +37,9 @@ vector cross(vector a, vector b)
 
 	return res;
 }
+
+double dot(vector a, vector b)
+{
+	double res = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+	return res;
+}
