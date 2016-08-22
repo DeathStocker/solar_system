@@ -90,18 +90,33 @@ int main(int argc, char* argv[])
 
 	// Calculating the position and velocity of the particle at ith iterations.
 	for (i = 0; i < no_of_iter; i++) {
-		double f1 = -(k * x);
-		x = x + (v * delta_t) + (f1 * pow(delta_t, 2)) / (m * 2.0);
-		double f2 = -(k * x);
-		v = v + ((f1 + f2) * delta_t / (m * 2.0));
 
-		fprintf(fp, "%lf %lf\n", t_count, x);
+		vector f1 = scalar_prod(-k, r);                 // F = -kx
+		/*
+		   Vector form of x = x + (delta_t * v) + (f1 * delta_t ^ 2) / 2 * m
+		 */
+		vector v_part = scalar_prod(delta_t, v);        // Velocity part of the equation
+		vector f_part = scalar_prod(pow(delta_t, 2) / (m * 2.0), f1);
+		// Force part of the equation
+		r = vector_add(r, v_part);
+		r = vector_add(r, f_part);
+
+		vector f2 = scalar_prod(-k, r); // F = -kx
+		/*
+		   Vector form of v = v + (delta_t * (f1 + f2) / (2 * m))
+		 */
+		double scal_part = delta_t / (m * 2.0);
+		v = vector_add(v, scalar_prod(scal_part, vector_add(f1, f2));
+
+		// Printing position coordinates to file.
+		fprintf(fp, "%lf %lf %lf %lf\n", t_count, r.x, r.y, r.z);
 
 		t_count += delta_t;
 	}
 
 	// Printing the final position of the particle.
-	printf("The final position (xf) of the particle is = %lf\n", x);
+	printf("The final position (xf) of the particle is = "
+	       "%lfi + %lfj + %lfk\n", r.x, r.y, r.z);
 
 	return 0;
 }
