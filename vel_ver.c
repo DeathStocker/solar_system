@@ -64,12 +64,12 @@ properties input_param()
 	printf("Enter delta_t = ");
 	scanf("%lf", &props.delta_t);
 
-	printf("Enter the initial position (r) of the particle = ");
+	printf("\nEnter the initial position (r) of the particle = \n");
 	vector_input(&props.r, props.dim);
-	printf("Enter the initial velocity (v) of the particle = ");
+	printf("\nEnter the initial velocity (v) of the particle = \n");
 	vector_input(&props.v, props.dim);
 
-	printf("Enter the spring constant (k) = ");
+	printf("\nEnter the spring constant (k) = ");
 	scanf("%lf", &props.k);
 	printf("Enter the mass (m) of the particle = ");
 	scanf("%lf", &props.m);
@@ -108,11 +108,11 @@ int main(int argc, char* argv[])
 		r = vector_add(r, v_part);
 		r = vector_add(r, f_part);
 
-		vector f2 = scalar_prod(-k, r); // F = -kx
+		vector f2 = scalar_prod(-k, r);         // F = -kx
 		/*
 		   Vector form of v = v + (delta_t * (f1 + f2) / (2 * m))
 		 */
-		double scal_part = delta_t / (m * 2.0);
+		double scal_part = delta_t / (m * 2.0); // Scalar part of the equation
 		v = vector_add(v, scalar_prod(scal_part, vector_add(f1, f2)));
 
 		// Printing position coordinates to file.
