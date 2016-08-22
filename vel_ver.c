@@ -1,13 +1,52 @@
 #include "calc.h"
 
-int main(int argc, char* argv[])
-{
+typedef struct _properties {
+	int dim;
 	double t;
 	double delta_t;
+	vector r;
+	vector v;
+	double k;
+	double m;
+} properties;
 
-	// User input.
+int vector_input(vector* a, int dim)
+{
+	vector temp;
+
+	switch (dim) {
+	case 3:
+		printf("x = ");
+		scanf("%lf", &temp.x);
+	case 2:
+		temp.x = 0;
+		printf("y = ");
+		scanf("%lf", &temp.y);
+	case 1:
+		temp.x = 0;
+		temp.y = 0;
+		printf("z = ");
+		scanf("%lf", &temp.z);
+	default:
+		printf("Dimension is not 1, 2, or 3. Exitting.\n");
+		return 1;
+	}
+
+	a->x = temp.z;
+	a->y = temp.y;
+	a->z = temp.x;
+
+	return 0;
+}
+
+properties input_param()
+{
+	properties props;
+
+	printf("Enter the dimension of the problem = ");
+	scanf("%d", &props.dim);
 	printf("Enter the final time (t) of the trajectory = ");
-	scanf("%lf", &t);
+	scanf("%lf", &props.t);
 
 	/*
 	 * delta_t is being user defined here because of the application of the
@@ -16,25 +55,30 @@ int main(int argc, char* argv[])
 	 * (where only larger deltas of maybe a centimeter or meter will matter)
 	 */
 	printf("Enter delta_t = ");
-	scanf("%lf", &delta_t);
+	scanf("%lf", &props.delta_t);
 
-	double x0, v0;
-	printf("Enter the initial position (x0) of the particle = ");
-	scanf("%lf", &x0);
-	printf("Enter the initial velocity (v0) of the particle = ");
-	scanf("%lf", &v0);
+	printf("Enter the initial position (r) of the particle = ");
+	vector_input(&props.r, dim);
+	printf("Enter the initial velocity (v) of the particle = ");
+	vector_input(&props.v, dim);
 
-	double k, m;
 	printf("Enter the spring constant (k) = ");
-	scanf("%lf", &k);
+	scanf("%lf", &props.k);
 	printf("Enter the mass (m) of the particle = ");
-	scanf("%lf", &m);
+	scanf("%lf", &props.m);
+
+	return props;
+}
+
+int main(int argc, char* argv[])
+{
+	properties props = input_param();
+	double t;
+	double delta_t;
 
 	FILE* fp = fopen("results.dat", "w");
 
 	int i;
-	double x = x0;
-	double v = v0;
 	double t_count = delta_t;
 	int no_of_iter = t / delta_t;
 
