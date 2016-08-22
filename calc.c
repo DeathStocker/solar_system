@@ -53,3 +53,15 @@ vector vector_add(vector a, vector b)
 
 	return res;
 }
+
+vector vector_minus(vector a, vector b)
+{
+	vector minus_b;
+	minus_b.x = -b.x;
+	minus_b.y = -b.y;
+	minus_b.z = -b.z;
+
+	vector res = vector_add(a, minus_b);
+
+	return res;
+}
