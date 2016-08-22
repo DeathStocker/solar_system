@@ -27,3 +27,13 @@ double integrate(double (*f)(double), double x1, double x2, double delta)
 
 	return sum;
 }
+
+vector cross(vector a, vector b)
+{
+	vector res;
+	res.x = (a.y * b.z) - (b.y * a.z);
+	res.y = (a.x * b.z) - (b.x * a.z);
+	res.z = (a.x * b.y) - (b.x * a.y);
+
+	return res;
+}
