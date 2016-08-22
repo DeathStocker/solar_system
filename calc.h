@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+// Struct for a point in 2-D plane in Cartesian coordinates.
 typedef struct pt_2d {
 	double x;
 	double y;
@@ -23,6 +24,12 @@ double diff(double (*f)(double), double x, double delta);
 
 double integrate(double (*f)(double), double x1, double x2, double delta);
 
-double my_round(double x, unsigned int digits);
+vector cross(vector a, vector b);
+
+double dot(vector a, vector b);
+
+vector vector_add(vector a, vector b);
+
+vector vector_minus(vector a, vector b);
 
 #endif
