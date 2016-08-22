@@ -73,10 +73,16 @@ properties input_param()
 int main(int argc, char* argv[])
 {
 	properties props = input_param();
-	double t;
-	double delta_t;
+	double t = props.t;
+	double delta_t = props.delta_t;
 
 	FILE* fp = fopen("results.dat", "w");
+
+	vector r = props.r;
+	vector v = props.v;
+
+	double k = props.k;
+	double m = props.m;
 
 	int i;
 	double t_count = delta_t;
