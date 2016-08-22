@@ -1,4 +1,5 @@
 #include "calc.h"
+#include "vector.h"
 
 typedef struct _properties {
 	int dim;
