@@ -43,3 +43,13 @@ double dot(vector a, vector b)
 	double res = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 	return res;
 }
+
+vector vector_add(vector a, vector b)
+{
+	vector res;
+	res.x = a.x + b.x;
+	res.y = a.y + b.y;
+	res.z = a.z + b.z;
+
+	return res;
+}
