@@ -13,11 +13,12 @@ typedef struct _properties {
 
 int vector_input(vector* a, int dim)
 {
-	vector temp;
+	double arr[3];
+	arr[0] = 0.0;
+	arr[1] = 0.0;
+	arr[2] = 0.0;
 
-	temp.x = 0;
-	temp.y = 0;
-	temp.z = 0;
+	int i = 0;
 
 	switch (dim) {
 	case 3:
@@ -26,22 +27,22 @@ int vector_input(vector* a, int dim)
 		   correctly without changing/adding any extra lines of code.
 		 */
 		printf("%c = ", (char)('y' + dim - 4));
-		scanf("%lf", &temp.x);
+		scanf("%lf", &arr[i++]);
 	case 2:
 		printf("%c = ", (char)('x' + dim - 2));
-		scanf("%lf", &temp.y);
+		scanf("%lf", &arr[i++]);
 	case 1:
 		printf("%c = ", (char)('w' + dim));
-		scanf("%lf", &temp.z);
+		scanf("%lf", &arr[i++]);
 		break;
 	default:
 		printf("Dimension is not 1, 2, or 3. Exitting.\n");
 		return 1;
 	}
 
-	a->x = temp.x;
-	a->y = temp.y;
-	a->z = temp.z;
+	a->x = arr[0];
+	a->y = arr[1];
+	a->z = arr[2];
 
 	return 0;
 }
