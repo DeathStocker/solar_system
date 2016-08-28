@@ -67,3 +67,28 @@ vector scalar_prod(double scalar, vector a)
 
 	return res;
 }
+
+/*
+   Calculates the mod of the vector.
+ */
+double mod_vector(vector a)
+{
+	double res = a.x * a.x + a.y * a.y + a.z * a.z;
+
+	res = sqrt(res);
+
+	return res;
+}
+
+/*
+   Give the unit vector r^ in the direction of the vector r.
+ */
+vector unit_vector(vector a)
+{
+	vector res;
+	double mod = mod_vector(a);
+
+	res = scalar_prod(mod, a);
+
+	return res;
+}
