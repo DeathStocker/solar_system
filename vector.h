@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 
 // Struct of a vector in Cartesian coordinates.
@@ -20,5 +21,9 @@ vector vector_add(vector a, vector b);
 vector vector_minus(vector a, vector b);
 
 vector scalar_prod(double scalar, vector a);
+
+double mod_vector(vector a);
+
+vector unit_vector(vector a);
 
 #endif
