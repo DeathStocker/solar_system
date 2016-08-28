@@ -78,7 +78,7 @@ properties input_param()
 	return props;
 }
 
-int main(int argc, char* argv[])
+int main()
 {
 	properties props = input_param();
 	double t = props.t;
