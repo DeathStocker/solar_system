@@ -3,7 +3,7 @@
 #include <time.h>
 
 #define DIMENSION 3
-#define DELTA_T 100
+#define DELTA_T 1
 #define TIME 47336400
 #define K 1
 #define G 6.67E-11
@@ -97,8 +97,31 @@ int vel_ver(state* st, body* particle, FILE* fp1, FILE* fp2, int no_of_iter)
 	vector v1 = st[0].v;
 	vector v2 = st[1].v;
 
+	vector init_pos = r2;
+
+	vector init_sun = r1;
+
 	int i;
 	double t_count = DELTA_T;
+
+	int flag = 0;
+
+	vector err;
+
+	err.x = 10000;
+	err.y = 10000;
+	err.z = 10000;
+
+	double tp = 0.0;
+
+	/////////////////////////////////////
+
+	double Ei = 0.5 * m1 * pow(mod_vector(v1), 2) + 0.5 * m2 * pow(mod_vector(v2), 2) - G * m1 * m2 / mod_vector(vector_minus(r2, r1));
+
+	/////////////////////////////////////
+
+	printf("The initial position of 2nd particle is = "
+	       "%lfi + %lfj + %lfk\n", init_pos.x, init_pos.y, init_pos.z);
 
 	t = clock();
 	for (i = 0; i < no_of_iter; i++) {
@@ -138,10 +161,24 @@ int vel_ver(state* st, body* particle, FILE* fp1, FILE* fp2, int no_of_iter)
 		scal_part = DELTA_T / (m2 * 2.0);                               // Scalar part of the equation
 		v2 = vector_add(v2, scalar_prod(scal_part, vector_add(f1, f2)));
 
-		//vector relative = vector_minus(r2, r1);
-		// Printing position coordinates to file.
-		fprintf(fp1, "%lf %lf %lf %lf\n", t_count, r1.x, r1.y, r1.z);
-		fprintf(fp2, "%lf %lf %lf %lf\n", t_count, r2.x, r2.y, r2.z);
+		vector relative = vector_minus(r2, r1);
+		if (i % 1000 == 0) {
+			// Printing position coordinates to file.
+			fprintf(fp1, "%lf %lf %lf %lf\n", t_count, r1.x, r1.y, r1.z);
+			fprintf(fp2, "%lf %lf %lf %lf\n", t_count, relative.x, relative.y, relative.z);
+		}
+
+		vector diff = vector_minus(init_pos, relative);
+
+		if (fabs(diff.x) <= err.x && fabs(diff.y) <= err.y && fabs(diff.z) <= err.z && flag == 0) {
+			flag = 1;
+			tp = t_count;
+			printf("The position at time period is = "
+			       "%lfi + %lfj + %lfk\n", diff.x, diff.y, diff.z);
+			tp = tp / (3600.0 * 24);
+
+			printf("Time period = %f days.\n", tp);
+		}
 
 		t_count += DELTA_T;
 	}
@@ -153,6 +190,18 @@ int vel_ver(state* st, body* particle, FILE* fp1, FILE* fp2, int no_of_iter)
 	printf("The final position (xf) of 2nd particle is = "
 	       "%lfi + %lfj + %lfk\n", r2.x, r2.y, r2.z);
 	printf("Time taken for vel_ver = %lfms\n", time_taken);
+
+	vector pos_sun = vector_minus(init_sun, r1);
+	printf("Delta r1 = "
+	       "%lfi + %lfj + %lfk\n", pos_sun.x, pos_sun.y, pos_sun.z);
+
+	/////////////////////////////////////
+
+	double Ef = 0.5 * m1 * pow(mod_vector(v1), 2) + 0.5 * m2 * pow(mod_vector(v2), 2) - G * m1 * m2 / mod_vector(vector_minus(r2, r1));
+
+	/////////////////////////////////////
+
+	printf("\n\nEi = %.12lf\nEf = %.12lf\n %cE = %.12lf\n", Ei, Ef, '%', fabs((Ef - Ei) / Ei) * 100.0);
 	return 0;
 }
 
