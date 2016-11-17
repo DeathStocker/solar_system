@@ -13,17 +13,11 @@ typedef struct _vector {
 } vector;
 
 vector cross(vector a, vector b);
-
 double dot(vector a, vector b);
-
 vector vector_add(vector a, vector b);
-
 vector vector_minus(vector a, vector b);
-
 vector scalar_prod(double scalar, vector a);
-
 double mod_vector(vector a);
-
 vector unit_vector(vector a);
 
 #endif

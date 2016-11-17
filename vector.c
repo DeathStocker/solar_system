@@ -87,6 +87,7 @@ vector unit_vector(vector a)
 {
 	vector res;
 	double mod = mod_vector(a);
+	mod = 1.0 / mod;
 
 	res = scalar_prod(mod, a);
 

@@ -11,28 +11,31 @@ RM=rm
 RMFLAGS=-f
 
 # Source files in the project. Append new files here.
-SRCS=vel_ver.c calc.c vector.c
+SRCS=body.c vector.c
 
 # Create object files list from source files list.
 OBJS= $(SRCS:.c=.o)
 
-all: vel_ver
+all: body
 all: clean-objects
 
 # clean completely wipes directory of all executables and objects
 clean: clean-objects
-	$(RM) $(RMFLAGS) vel_ver
+	$(RM) $(RMFLAGS) body
 
 # only removes objects, not final executable
 clean-objects:
 	$(RM) $(RMFLAGS) *.o
 
+clean-data:
+	$(RM) $(RMFLAGS) *.dat
+
 debug: CFLAGS+=$(DFLAGS)
 debug: LFLAGS+=$(DFLAGS)
 debug: all
 
-vel_ver: $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o vel_ver -lm
+body: $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o body -lm
 
 # the following magic code is from here:
 # http://www.cs.swarthmore.edu/~newhall/unixhelp/howto_makefiles.html
