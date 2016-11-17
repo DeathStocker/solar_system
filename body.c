@@ -157,6 +157,27 @@ state vel_ver_diff_eq(state* st, body* bd, int i, int N)
 	return res;
 }
 
+double energy(state* st,body* particle)
+{
+	double Ki=0.0;
+	double Gi=0.0;
+	int i,j;
+	// Calculating the total gravitational potential and kinetic energy
+	for(i=0 ; i<NUMBER_OF_BODIES ; i++){
+			Ki= Ki + 0.5 * particle[i].mass * pow(mod_vector(st[i].v),2);
+		
+		for(j=0 ; j<NUMBER_OF_BODIES ; j++){
+			if( i != j)
+				Gi = Gi + ((G * particle[i].mass * particle[j].mass)/(mod_vector(vector_minus(st[j].r,st[i].r))));
+		}
+	}
+
+	Gi=Gi/2;
+
+	printf("\nTotal energy:%lf",Ki-Gi);
+	return Ki-Gi;
+}
+
 int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 {
 	clock_t t;
@@ -237,8 +258,12 @@ int main()
 
 	int no_of_iter = TIME / DELTA_T;
 
-	vel_ver(st, particle, fp, no_of_iter);
+	energy(st, particle);
 
+	vel_ver(st, particle, fp, no_of_iter);
+	
+	energy(st, particle);
+	
 	free(fp);
 
 	return 0;
