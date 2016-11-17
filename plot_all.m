@@ -13,5 +13,3 @@ for i = 0 : num_files - 1
   plot(x, y, 'color', rand(1, 3), 'linewidth', 1.5);
   hold on;
 endfor;
-clear;
-clc;

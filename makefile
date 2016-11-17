@@ -11,7 +11,7 @@ RM=rm
 RMFLAGS=-f
 
 # Source files in the project. Append new files here.
-SRCS=body.c calc.c vector.c
+SRCS=body.c vector.c
 
 # Create object files list from source files list.
 OBJS= $(SRCS:.c=.o)
@@ -26,6 +26,9 @@ clean: clean-objects
 # only removes objects, not final executable
 clean-objects:
 	$(RM) $(RMFLAGS) *.o
+
+clean-data:
+	$(RM) $(RMFLAGS) *.dat
 
 debug: CFLAGS+=$(DFLAGS)
 debug: LFLAGS+=$(DFLAGS)
