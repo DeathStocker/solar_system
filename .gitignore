@@ -39,5 +39,5 @@
 *.pdf
 
 #Output Files
-results.dat
-vel_ver
+body*.dat
+body
