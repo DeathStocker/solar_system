@@ -192,13 +192,6 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	err.z = 10000;
 
 	err = (vector)err;
-
-	/////////////////////////////////////
-
-	// double Ei = 0.5 * m1 * pow(mod_vector(v1), 2) + 0.5 * m2 * pow(mod_vector(v2), 2) - G * m1 * m2 / mod_vector(vector_minus(r2, r1));
-
-	/////////////////////////////////////
-
 	t = clock();
 	double* max_r = calloc(NUMBER_OF_BODIES, sizeof(double));
 	double* min_r = malloc(NUMBER_OF_BODIES * sizeof(double));
@@ -253,17 +246,21 @@ int main()
 
 
 	input_param(st, particle);
+	double e1=0.0,e2=0.0,error_in_energy=0.0;
 
 	FILE** fp = create_output_files(NUMBER_OF_BODIES);
 
 	int no_of_iter = TIME / DELTA_T;
 
-	energy(st, particle);
+	e1=energy(st, particle);
 
 	vel_ver(st, particle, fp, no_of_iter);
 	
-	energy(st, particle);
+	e2=energy(st, particle);
 	
+	error_in_energy= abs((e2-e1)/e1)*100;
+	printf("\nThe net percentage error in the total energy is %lf percent",error_in_energy);
+
 	free(fp);
 
 	return 0;
