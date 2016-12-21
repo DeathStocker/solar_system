@@ -4,11 +4,11 @@
 #include <float.h>
 
 #define DIMENSION 3
-#define DELTA_T 10
-#define TIME 47336400
-#define K 1
 #define G 6.67E-11
-#define NUMBER_OF_BODIES 3
+
+static int number_of_bodies;
+static double sim_time;
+static double delta_t;
 
 typedef struct _state {
 	vector r;
@@ -41,7 +41,7 @@ FILE** create_output_files(int N)
 	return fp;
 }
 
-int vector_input(vector* a, int dim)
+int vector_input(FILE** fp, vector* a, int dim)
 {
 	double arr[3];
 
@@ -53,18 +53,11 @@ int vector_input(vector* a, int dim)
 
 	switch (dim) {
 	case 3:
-		/*
-		   Custom magic formula to print the respective coordinate
-		   correctly without changing/adding any extra lines of code.
-		 */
-		printf("\t%c = ", (char)('y' + dim - 4));
-		scanf("%lf", &arr[i++]);
+		fscanf(*fp, "%le", &arr[i++]);
 	case 2:
-		printf("\t%c = ", (char)('x' + dim - 2));
-		scanf("%lf", &arr[i++]);
+		fscanf(*fp, "%le", &arr[i++]);
 	case 1:
-		printf("\t%c = ", (char)('w' + dim));
-		scanf("%lf", &arr[i++]);
+		fscanf(*fp, "%le", &arr[i++]);
 		break;
 	default:
 		printf("Dimension is not 1, 2, or 3. Exitting.\n");
@@ -74,25 +67,6 @@ int vector_input(vector* a, int dim)
 	a->x = arr[0];
 	a->y = arr[1];
 	a->z = arr[2];
-
-	return 0;
-}
-
-int input_param(state* st, body* particle)
-{
-	int i;
-
-	for (i = 0; i < NUMBER_OF_BODIES; i++) {
-		printf("Particle [%d] - \n", (i + 1));
-		printf("\tEnter the mass = ");
-		scanf("%le", &particle[i].mass);
-		printf("\tEnter the initial position (r) of the particle = \n");
-		vector_input(&st[i].r, DIMENSION);
-		printf("\tEnter the initial velocity (v) of the particle = \n");
-		vector_input(&st[i].v, DIMENSION);
-		particle[i].prev_r = st[i].r;
-		particle[i].prev_v = st[i].v;
-	}
 
 	return 0;
 }
@@ -132,8 +106,8 @@ state vel_ver_diff_eq(state* st, body* bd, int i, int N)
 	/*
 	   Vector form of x = x + (delta_t * v) + (f1 * delta_t ^ 2) / 2 * m
 	 */
-	vector v_part = scalar_prod(DELTA_T, v);                        // Velocity part of the equation
-	vector f_part = scalar_prod(pow(DELTA_T, 2) / (bd[i].mass * 2.0), f1);
+	vector v_part = scalar_prod(delta_t, v);                        // Velocity part of the equation
+	vector f_part = scalar_prod(pow(delta_t, 2) / (bd[i].mass * 2.0), f1);
 
 	// Force part of the equation
 	r = vector_add(r, v_part);
@@ -145,7 +119,7 @@ state vel_ver_diff_eq(state* st, body* bd, int i, int N)
 	/*
 	   Vector form of v = v + (delta_t * (f1 + f2) / (2 * m))
 	 */
-	double scal_part = DELTA_T / (bd[i].mass * 2.0);                        // Scalar part of the equation
+	double scal_part = delta_t / (bd[i].mass * 2.0);                        // Scalar part of the equation
 	v = vector_add(v, scalar_prod(scal_part, vector_add(f1, f2)));
 
 	st[i].v = v;
@@ -157,12 +131,34 @@ state vel_ver_diff_eq(state* st, body* bd, int i, int N)
 	return res;
 }
 
+double energy(state* st, body* particle)
+{
+	double Ki = 0.0;
+	double Gi = 0.0;
+	int i, j;
+
+	// Calculating the total gravitational potential and kinetic energy
+	for (i = 0; i < number_of_bodies; i++) {
+		Ki = Ki + 0.5 * particle[i].mass * pow(mod_vector(st[i].v), 2);
+
+		for (j = 0; j < number_of_bodies; j++)
+			if ( i != j)
+				Gi = Gi
+				     + ((G * particle[i].mass * particle[j].mass)
+					/ (mod_vector(vector_minus(st[j].r, st[i].r))));
+	}
+
+	Gi = Gi / 2;
+
+	return fabs(Ki - Gi);
+}
+
 int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 {
 	clock_t t;
 
 	int i, j;
-	double t_count = DELTA_T;
+	double t_count = delta_t;
 
 	vector err;
 
@@ -171,50 +167,50 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	err.z = 10000;
 
 	err = (vector)err;
-
-	/////////////////////////////////////
-
-	// double Ei = 0.5 * m1 * pow(mod_vector(v1), 2) + 0.5 * m2 * pow(mod_vector(v2), 2) - G * m1 * m2 / mod_vector(vector_minus(r2, r1));
-
-	/////////////////////////////////////
-
 	t = clock();
-	double* max_r = calloc(NUMBER_OF_BODIES, sizeof(double));
-	double* min_r = malloc(NUMBER_OF_BODIES * sizeof(double));
-	double* max_v = calloc(NUMBER_OF_BODIES, sizeof(double));
-	double* min_v = malloc(NUMBER_OF_BODIES * sizeof(double));
-	for (i = 0; i < NUMBER_OF_BODIES; i++) {
+
+	double* max_r = calloc(number_of_bodies, sizeof(double));
+	double* min_r = malloc(number_of_bodies * sizeof(double));
+	double* max_v = calloc(number_of_bodies, sizeof(double));
+	double* min_v = malloc(number_of_bodies * sizeof(double));
+
+	for (i = 0; i < number_of_bodies; i++) {
 		min_r[i] = DBL_MAX;
 		min_v[i] = DBL_MAX;
 	}
 
 	for (i = 0; i < no_of_iter; i++) {
-		for (j = 0; j < NUMBER_OF_BODIES; j++) {
-			state next = vel_ver_diff_eq(st, particle, j, NUMBER_OF_BODIES);
+		for (j = 0; j < number_of_bodies; j++) {
+			state next = vel_ver_diff_eq(st, particle, j, number_of_bodies);
 			particle[j].prev_r = next.r;
 			particle[j].prev_v = next.v;
 			st[j].r = next.r;
 			st[j].v = next.v;
+
 			vector r1 = next.r;
+			vector v1 = next.v;
+			double mod_r = mod_vector(r1);
+			double mod_v = mod_vector(v1);
 
-			double mod = mod_vector(r1);
-			if (mod > max_r[j]) {
-				max_r[j] = mod;
-				min_v[j] = mod_vector(next.v);
-			}
+			if (mod_r > max_r[j])
+				max_r[j] = mod_r;
 
-			if (min_r[j] > mod) {
-				min_r[j] = mod;
-				max_v[j] = mod_vector(next.v);
-			}
+			if (min_r[j] > mod_r)
+				min_r[j] = mod_r;
+
+			if (min_v[j] > mod_v)
+				min_v[j] = mod_v;
+
+			if (mod_v > max_v[j])
+				max_v[j] = mod_v;
 
 			if (i % 1000 == 0)
 				fprintf(fp[j], "%lf %lf %lf %lf\n", t_count, r1.x, r1.y, r1.z);
 		}
-		t_count += DELTA_T;
+		t_count += delta_t;
 	}
 
-	for (i = 0; i < NUMBER_OF_BODIES; i++)
+	for (i = 0; i < number_of_bodies; i++)
 		printf("Body %d -\n\tMAX_R = %lf\n\tMIN_R = %lf\n\tMAX_V = %lf\n\tMIN_V = %lf\n", i, max_r[i], min_r[i], max_v[i], min_v[i]);
 
 	t = clock() - t;
@@ -225,21 +221,70 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	return 0;
 }
 
-int main()
+int input_param(char* filename)
 {
-	state st[NUMBER_OF_BODIES];
-	body particle[NUMBER_OF_BODIES];
+	int i;
 
+	double e1 = 0.0, e2 = 0.0, error_in_energy = 0.0;
 
-	input_param(st, particle);
+	FILE* fp = fopen(filename, "r");
 
-	FILE** fp = create_output_files(NUMBER_OF_BODIES);
+	if (fp == NULL) {
+		printf("Cannot open file %s. Exitting.\n", filename);
+		exit(1);
+	}
 
-	int no_of_iter = TIME / DELTA_T;
+	fscanf(fp, "%d", &number_of_bodies);
 
-	vel_ver(st, particle, fp, no_of_iter);
+	state *st = malloc(number_of_bodies * sizeof(state));
+	body* particle = malloc(number_of_bodies * sizeof(body));
 
-	free(fp);
+	for (i = 0; i < number_of_bodies; i++) {
+		fscanf(fp, "%le", &particle[i].mass);
+		vector_input(&fp, &st[i].r, DIMENSION);
+		vector_input(&fp, &st[i].v, DIMENSION);
+		particle[i].prev_r = st[i].r;
+		particle[i].prev_v = st[i].v;
+	}
+
+	fscanf(fp, "%lf", &sim_time);
+	fscanf(fp, "%lf", &delta_t);
+
+	system("make clean-data");
+
+	FILE** list_fp = create_output_files(number_of_bodies);
+
+	int no_of_iter = sim_time / delta_t;
+
+	e1 = energy(st, particle);
+	printf("Total initial energy = %lf\n\n", e1);
+
+	vel_ver(st, particle, list_fp, no_of_iter);
+
+	e2 = energy(st, particle);
+	printf("Total final energy = %lf\n\n", e2);
+
+	error_in_energy = fabs((e2 - e1) / e1) * 100;
+	printf("Percentage error in total energy = %lf%c \n", error_in_energy, '%');
+
+	fclose(fp);
+
+	for (i = 0; i < number_of_bodies; i++)
+		fclose(list_fp[i]);
+
+	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	if (argc != 2) {
+		printf("Enter 1 file name.\n");
+		return 1;
+	}
+
+	char* filename = argv[1];
+
+	input_param(filename);
 
 	return 0;
 }
