@@ -53,10 +53,6 @@ int vector_input(FILE** fp, vector* a, int dim)
 
 	switch (dim) {
 	case 3:
-		/*
-		   Custom magic formula to print the respective coordinate
-		   correctly without changing/adding any extra lines of code.
-		 */
 		fscanf(*fp, "%le", &arr[i++]);
 	case 2:
 		fscanf(*fp, "%le", &arr[i++]);
@@ -190,18 +186,23 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 			particle[j].prev_v = next.v;
 			st[j].r = next.r;
 			st[j].v = next.v;
+
 			vector r1 = next.r;
+			vector v1 = next.v;
+			double mod_r = mod_vector(r1);
+			double mod_v = mod_vector(v1);
 
-			double mod = mod_vector(r1);
-			if (mod > max_r[j]) {
-				max_r[j] = mod;
-				min_v[j] = mod_vector(next.v);
-			}
+			if (mod_r > max_r[j])
+				max_r[j] = mod_r;
 
-			if (min_r[j] > mod) {
-				min_r[j] = mod;
-				max_v[j] = mod_vector(next.v);
-			}
+			if (min_r[j] > mod_r)
+				min_r[j] = mod_r;
+
+			if (min_v[j] > mod_v)
+				min_v[j] = mod_v;
+
+			if (mod_v > max_v[j])
+				max_v[j] = mod_v;
 
 			if (i % 1000 == 0)
 				fprintf(fp[j], "%lf %lf %lf %lf\n", t_count, r1.x, r1.y, r1.z);
