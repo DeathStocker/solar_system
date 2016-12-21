@@ -21,6 +21,8 @@ typedef struct _body {
 	vector prev_v;
 } body;
 
+static vector* initial_positions = NULL;
+
 FILE** create_output_files(int N)
 {
 	FILE** fp = malloc(N * sizeof(FILE*));
@@ -153,6 +155,22 @@ double energy(state* st, body* particle)
 	return fabs(Ki - Gi);
 }
 
+double* position_equal_with_error(double* time_period, state* st, double t_count)
+{
+	int i;
+
+	for (i = 0; i < number_of_bodies; i++) {
+		double window_side =  mod_vector(st[i].v) * delta_t;
+		if (fabs(st[i].r.x - st[0].r.x - initial_positions[i].x + initial_positions[0].x) <= window_side
+		    && fabs(st[i].r.y - st[0].r.y - initial_positions[i].y + initial_positions[0].y) <= window_side
+		    && fabs(st[i].r.z - st[0].r.z - initial_positions[i].z + initial_positions[0].z) <= window_side
+		    && time_period[i] <=  delta_t)
+			time_period[i] = t_count;
+	}
+
+	return time_period;
+}
+
 int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 {
 	clock_t t;
@@ -173,6 +191,7 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	double* min_r = malloc(number_of_bodies * sizeof(double));
 	double* max_v = calloc(number_of_bodies, sizeof(double));
 	double* min_v = malloc(number_of_bodies * sizeof(double));
+	double* time_period = calloc(number_of_bodies, sizeof(double));
 
 	for (i = 0; i < number_of_bodies; i++) {
 		min_r[i] = DBL_MAX;
@@ -204,6 +223,8 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 			if (mod_v > max_v[j])
 				max_v[j] = mod_v;
 
+			time_period = position_equal_with_error(time_period, st, t_count);
+
 			if (i % 1000 == 0)
 				fprintf(fp[j], "%lf %lf %lf %lf\n", t_count, r1.x, r1.y, r1.z);
 		}
@@ -217,6 +238,12 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	double time_taken = ((double)t) / CLOCKS_PER_SEC * 1000;
 
 	printf("Time taken for vel_ver = %lfms\n", time_taken);
+
+	for (i = 0; i < number_of_bodies; i++) {
+		double days = time_period[i] / (3600 * 24);
+		printf("Time Period of Body[%d] = %.2f days / %.2f years\n", i,
+		       days, days / 365.25);
+	}
 
 	return 0;
 }
@@ -238,12 +265,14 @@ int input_param(char* filename)
 
 	state *st = malloc(number_of_bodies * sizeof(state));
 	body* particle = malloc(number_of_bodies * sizeof(body));
+	initial_positions = malloc(number_of_bodies * sizeof(vector));
 
 	for (i = 0; i < number_of_bodies; i++) {
 		fscanf(fp, "%le", &particle[i].mass);
 		vector_input(&fp, &st[i].r, DIMENSION);
 		vector_input(&fp, &st[i].v, DIMENSION);
 		particle[i].prev_r = st[i].r;
+		initial_positions[i] = st[i].r;
 		particle[i].prev_v = st[i].v;
 	}
 
