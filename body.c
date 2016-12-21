@@ -157,25 +157,26 @@ state vel_ver_diff_eq(state* st, body* bd, int i, int N)
 	return res;
 }
 
-double energy(state* st,body* particle)
+double energy(state* st, body* particle)
 {
-	double Ki=0.0;
-	double Gi=0.0;
-	int i,j;
+	double Ki = 0.0;
+	double Gi = 0.0;
+	int i, j;
+
 	// Calculating the total gravitational potential and kinetic energy
-	for(i=0 ; i<NUMBER_OF_BODIES ; i++){
-			Ki= Ki + 0.5 * particle[i].mass * pow(mod_vector(st[i].v),2);
-		
-		for(j=0 ; j<NUMBER_OF_BODIES ; j++){
-			if( i != j)
-				Gi = Gi + ((G * particle[i].mass * particle[j].mass)/(mod_vector(vector_minus(st[j].r,st[i].r))));
-		}
+	for (i = 0; i < NUMBER_OF_BODIES; i++) {
+		Ki = Ki + 0.5 * particle[i].mass * pow(mod_vector(st[i].v), 2);
+
+		for (j = 0; j < NUMBER_OF_BODIES; j++)
+			if ( i != j)
+				Gi = Gi
+				     + ((G * particle[i].mass * particle[j].mass)
+					/ (mod_vector(vector_minus(st[j].r, st[i].r))));
 	}
 
-	Gi=Gi/2;
+	Gi = Gi / 2;
 
-	printf("\nTotal energy:%lf",Ki-Gi);
-	return Ki-Gi;
+	return fabs(Ki - Gi);
 }
 
 int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
@@ -197,6 +198,7 @@ int vel_ver(state* st, body* particle, FILE** fp, int no_of_iter)
 	double* min_r = malloc(NUMBER_OF_BODIES * sizeof(double));
 	double* max_v = calloc(NUMBER_OF_BODIES, sizeof(double));
 	double* min_v = malloc(NUMBER_OF_BODIES * sizeof(double));
+
 	for (i = 0; i < NUMBER_OF_BODIES; i++) {
 		min_r[i] = DBL_MAX;
 		min_v[i] = DBL_MAX;
@@ -244,22 +246,24 @@ int main()
 	state st[NUMBER_OF_BODIES];
 	body particle[NUMBER_OF_BODIES];
 
-
 	input_param(st, particle);
-	double e1=0.0,e2=0.0,error_in_energy=0.0;
+	double e1 = 0.0, e2 = 0.0, error_in_energy = 0.0;
 
 	FILE** fp = create_output_files(NUMBER_OF_BODIES);
 
 	int no_of_iter = TIME / DELTA_T;
 
-	e1=energy(st, particle);
+	e1 = energy(st, particle);
+
+	printf("Total initial energy = %lf\n\n", e1);
 
 	vel_ver(st, particle, fp, no_of_iter);
-	
-	e2=energy(st, particle);
-	
-	error_in_energy= abs((e2-e1)/e1)*100;
-	printf("\nThe net percentage error in the total energy is %lf percent",error_in_energy);
+
+	e2 = energy(st, particle);
+	printf("Total final energy = %lf\n\n", e2);
+
+	error_in_energy = fabs((e2 - e1) / e1) * 100;
+	printf("Percentage error in total energy = %lf%c \n", error_in_energy, '%');
 
 	free(fp);
 
